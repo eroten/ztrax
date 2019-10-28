@@ -31,7 +31,7 @@ options(scipen = 999) # Do not print scientific notation
 options(stringsAsFactors = FALSE) ## Do not load strings as factors
 
 # Change directory to where you've stored ZTRAX
-dir <- "//lyn-dmz-ana-013/g$/ZTRAX/DataExtract/ZTRAX_20160309"
+dir <- "../originals/current_transaction_assessor/20191009/"
 
 
 #  Pull in layout information
@@ -72,7 +72,7 @@ col_namesBldgA <- layoutZAsmt[layoutZAsmt$TableName == 'utBuildingAreas', 'Field
 ######################################################################
 # Pull address, geographic, lot size, and tax data from main table
 
-base <- read.table(file.path(dir, "53/ZAsmt/Main.txt"),
+base <- read.table(file.path(dir, "/50/ZAsmt/Main.txt"),
                        nrows = rows2load,                    
                        sep = '|',
                        header = FALSE,
@@ -80,7 +80,7 @@ base <- read.table(file.path(dir, "53/ZAsmt/Main.txt"),
                        skipNul = TRUE,                            # tells R to treat two ajacent delimiters as dividing a column 
                        comment.char="",                           # tells R not to read any symbol as a comment
                        quote = "",                                # this tells R not to read quotation marks as a special symbol
-                       col.names = col_namesMain
+                       col.names = col_namesMain$FieldName
                        )                                          
 
 base <- as.data.table(base)
@@ -103,7 +103,7 @@ base <- base[ , list(RowID, ImportParcelID, LoadID,
 length(unique(base$ImportParcelID))  # Number of unique ImportParcelIDs
 dim(base)[1]                         # Number of rows in the base dataset
               
-          if( length(unique(base$ImportParcelID)) != dim(base)[1] ){
+          if(length(unique(base$ImportParcelID)) != dim(base)[1] ){
 
             #Example: Print all entries for parcels with at least two records.
              base[ImportParcelID %in% base[duplicated(ImportParcelID), ImportParcelID], ][order(ImportParcelID)]
@@ -118,7 +118,7 @@ dim(base)[1]                         # Number of rows in the base dataset
 ######################################################################
 #### Load most property attributes
 
-bldg <- read.table(file.path(dir, "53/ZAsmt/Building.txt"),
+bldg <- read.table(file.path(dir, "50/ZAsmt/Building.txt"),
                    nrows = rows2load,                    # this is set just to test it out. Remove when code runs smoothly.
                    sep = '|',
                    header = FALSE,
@@ -126,7 +126,7 @@ bldg <- read.table(file.path(dir, "53/ZAsmt/Building.txt"),
                    skipNul = TRUE,                            # tells R to treat two ajacent delimiters as dividing a column 
                    comment.char="",                           # tells R not to read any symbol as a comment
                    quote = "",                                # this tells R not to read quotation marks as a special symbol
-                   col.names = col_namesBldg
+                   col.names = col_namesBldg$FieldName
                    ) 
 
 bldg <- as.data.table(bldg)
@@ -159,7 +159,7 @@ bldg <- bldg[PropertyLandUseStndCode %in% c('RR101',  # SFR
 ######################################################################
 #### Load building squarefoot data
 
-sqft <- read.table(file.path(dir, "53/ZAsmt/BuildingAreas.txt"),
+sqft <- read.table(file.path(dir, "50/ZAsmt/BuildingAreas.txt"),
                    nrows = rows2load,                    # this is set just to test it out. Remove when code runs smoothly.
                    sep = '|',
                    header = FALSE,
@@ -167,7 +167,7 @@ sqft <- read.table(file.path(dir, "53/ZAsmt/BuildingAreas.txt"),
                    skipNul = TRUE,                            # tells R to treat two ajacent delimiters as dividing a column 
                    comment.char="",                           # tells R not to read any symbol as a comment
                    quote = "",                                # this tells R not to read quotation marks as a special symbol
-                   col.names = col_namesBldgA
+                   col.names = col_namesBldgA$FieldName
 )
 
 
@@ -214,7 +214,7 @@ col_namesMainTr <- layoutZTrans[layoutZTrans$TableName == 'utMain', 'FieldName']
 ###############################################################################
 #   Load PropertyInfo table for later merge
 
-propTrans <- read.table(file.path(dir, "53/ZTrans/PropertyInfo.txt"),
+propTrans <- read.table(file.path("../originals/current_transaction_assessor/20191009/50/ZTrans/PropertyInfo.txt"),
                         nrows = rows2load,                    # this is set just to test it out. Remove when code runs smoothly.
                         sep = '|',
                         header = FALSE,
@@ -222,7 +222,7 @@ propTrans <- read.table(file.path(dir, "53/ZTrans/PropertyInfo.txt"),
                         skipNul = TRUE,                            # tells R to treat two ajacent delimiters as dividing a column 
                         comment.char="",                           # tells R not to read any symbol as a comment
                         quote = "",                                # this tells R not to read quotation marks as a special symbol
-                        col.names = col_namesProp
+                        col.names = col_namesProp$FieldName
 )
 
 propTrans <- as.data.table(propTrans)
@@ -248,7 +248,7 @@ propTrans <- propTrans[!(TransId %in% dropTrans), ]   # ! is "not"
 #######################################################################################
 #  Load main table in Ztrans database, which provides information on real estate events
 
-trans <- read.table(file.path(dir, "53/ZTrans/Main.txt"),
+trans <- read.table(file.path(dir, "50/ZTrans/Main.txt"),
                         nrows = rows2load,                    # this is set just to test it out. Remove when code runs smoothly.
                         sep = '|',
                         header = FALSE,
@@ -256,7 +256,7 @@ trans <- read.table(file.path(dir, "53/ZTrans/Main.txt"),
                         skipNul = TRUE,                            # tells R to treat two ajacent delimiters as dividing a column 
                         comment.char="",                           # tells R not to read any symbol as a comment
                         quote = "",                                # this tells R not to read quotation marks as a special symbol
-                        col.names = col_namesMainTr
+                        col.names = col_namesMainTr$FieldName
 )
 
 trans <- as.data.table(trans)
